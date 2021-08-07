@@ -1,2 +1,2 @@
 # embedded-png-extract
-Extract embedded PNG images from a binary.
+A quick and dirty python script that allows you to extract embedded PNG images from a binary file.
