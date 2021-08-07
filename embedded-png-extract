@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+# extract embedded PNG files from binaries.
+
+import sys, os, re, binascii
+
+if len(sys.argv) != 3:
+    print('Usage: ' + sys.argv[0] + ' <binary_file> <desination_dir>')
+    print('<binary_file> - the binary containing embedded PNG images')
+    print('<desination_dir> - the output directory where to save the images')
+    sys.exit(1)
+
+PNG_HEADER = '89504e47'
+PNG_FOOTER = '49454e44ae426082'
+file_path = sys.argv[1]
+desination_dir = sys.argv[2]
+
+bin = open(file_path, 'rb')
+hex = binascii.hexlify(bin.read())
+matches = re.findall(PNG_HEADER + "(.*?)" + PNG_FOOTER, hex.decode())
+
+i = 0
+for body in matches:
+    i = i + 1
+    png = PNG_HEADER + body + PNG_FOOTER
+    png_raw = binascii.a2b_hex(png)
+    fname = 'carved_' + str(i) + '.png'
+    writer = open(os.path.join(desination_dir, fname), 'wb+')
+    writer.write(png_raw)
+    writer.close()
+    print('Wrote ' + fname)
+
+print('Done! Total extracted: ' + str(i))
+bin.close()
